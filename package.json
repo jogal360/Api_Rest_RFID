@@ -1,0 +1,18 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "API REST para el proyecto Access Logic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joaquin GALVAN",
+  "license": "MIT",
+  "dependencies": {
+    "express": "",
+    "mongo": "",
+    "mongodb": "",
+    "fs":"",
+    "body-parser" : ""
+  }
+}
