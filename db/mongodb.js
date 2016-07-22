@@ -26,9 +26,9 @@ module.exports = function (conf) {
                 callback(true);
                 return;
             }
-            console.log('Connected to the database');
             self.conn = connection;
             self.collection = conf.collection;
+            console.log('Connected to the database', self.conn);
             callback(false, self.conn);
         });
     }; // connect()

@@ -1,6 +1,22 @@
-module.exports = function (app){
-	var bodyParser = require( 'body-parser' );
-	app.use(bodyParser.json()); // for parsing application/json
-	//require('./file')(app);
-	require('./cruds')(app);
+module.exports = function (app,router,ctrl,passport){
+	var ctrlEmpleados = ctrl.empleados;
+	//console.log(ctrl);
+
+	//Raiz
+	router.route("/")
+		.get(ctrlEmpleados.findAllEmpleados);
+		//.post(ctrl.addEmpleado);
+
+	//Raiz
+	router.route("/addUser")
+		.get(ctrlEmpleados.findAllEmpleados1);
+
+
+	//Post login
+	router.route("/login")
+		.post(passport.authenticate('local', {
+    	successRedirect: '/',
+   		failureRedirect: '/addUser'
+  	}));
+	
 }

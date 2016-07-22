@@ -9,10 +9,18 @@
   "author": "Joaquin GALVAN",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "",
     "express": "",
+    "express-session": "^1.14.0",
+    "fs": "",
+    "jade": "^1.11.0",
+    "method-override": "",
     "mongo": "",
     "mongodb": "",
-    "fs":"",
-    "body-parser" : ""
+    "mongoose": "",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^4.0.0",
+    "pug": "^2.0.0-beta4"
   }
 }

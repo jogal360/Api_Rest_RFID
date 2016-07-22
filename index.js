@@ -1,53 +1,112 @@
 /*
  * Initialize required modules
  */
-var express = require('express');
-var fs = require('fs');
-var app = express();
+var express        = require("express"),  
+    app            = express(),
+    bodyParser     = require("body-parser"),
+    methodOverride = require("method-override"),
+    fs             = require('fs'),
+    mongoose       = require('mongoose'),
+    http 		   = require('http'),
+    passport 	   = require('passport'),
+    LocalStrategy  = require('passport-local').Strategy,
+    path		   = require('path'),
+    https          = require('https');
 
-//Archivo de configuración
-var conf = require('./conf.json');
-
-//Base de datos
-var database = require('./db/index.js');
-app.locals.db = database(conf.db, conf[conf.db]);
-
-//START: ------------Variables de configuración------------
-var http_port = conf.server.http_port;
-var https_port = conf.server.https_port;
-var cer = conf.server.cer;
-var key = conf.server.key;
-//END: ------------Variables de configuración------------
-
-var http = require('http');
-var https = require('https');
-
-//Rutas del servidor
-require('./routes/index')(app);
 
 /*
- * No se encuentra en un entorno de desarrollo, inicia el servidor
+ * Conf file
  */
-if (!module.parent) {
+var conf       = require('./conf.json'),
+	http_port  = conf.server.http_port,
+	https_port = conf.server.https_port,
+	cer        = conf.server.cer,
+	key        = conf.server.key;
 
-	//Poniendo en marcha al servidor
-	http.createServer(app).listen(http_port, function(){
-			console.log('HTTP server listening on port %s in %s mode', http_port, app.get('env'));
+/*
+ * Database conf
+ */
+var database = require('./db');
+
+/*
+ * Router 
+ */
+var router = express.Router();
+
+/*
+ * Use the middlewares
+ */
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json());
+app.use(methodOverride());
+app.use(require('express-session')({
+    secret: 'accesslogic',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(router);
+//app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+app.use(express.static('public'));
+
+/*
+ * Import Models and controllers
+ */
+var models        = require('./models')(mongoose);
+var controllers   = require('./controllers');
+
+/*
+ * passport config
+ */
+var Account = require('./models/logins');
+var login = mongoose.model('logins');
+passport.use(new LocalStrategy(Account.authenticate()));
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+   
+    process.nextTick(function () {
+	  login.findOne({'usuario':username},
+		function(err, user) {
+			if (err) { return done(err); console.log("error gral");}
+			if (!user) { return done(null, false); console.log("no user");}
+			if (user.password != password) { return done(null, false); console.log("user ok pass not");}
+			console.log("ok");
+			return done(null, user);
 		});
-		if ( !(cer == '') && !(key == ''))
-		{
-			console.log('Creating HTTPS server on port %s', https_port);
-			https.createServer({
-				key : fs.readFileSync(key),
-				cert : fs.readFileSync(cer)
+    });
+  }
+));
 
-			}, app).listen(https_port, function(){
-				console.log('HTTPS server listening on port %s in %s mode', https_port, app.get('env'));
-			}); 
-		}
-} else {
-	/*
-     * Se encuentra en un entorno de desarrollo, se exporta la app
-     */
-    module.exports = app;
-}
+/*
+ * Routes
+ */
+routes = require('./routes')(app,router,controllers, passport);
+
+database(conf.db, conf[conf.db], mongoose, function(err){
+	if(err){
+		console.log('ERROR: connecting to Database. ' + err);
+	}
+	http.createServer(app).listen(http_port, function(){
+		console.log('HTTP server listening on port %s in %s mode', http_port, app.get('env'));
+	}); 
+	if ( cer != '' && key != '')
+	{		
+		https.createServer({
+			key : fs.readFileSync(key),
+			cert : fs.readFileSync(cer)
+
+		},app).listen(https_port, function(){
+			console.log('HTTPS server listening on port %s in %s mode', https_port, app.get('env'));
+		}); 
+	}
+});
+

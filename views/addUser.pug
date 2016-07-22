@@ -1,0 +1,64 @@
+doctype html
+html(lang="es")
+	head
+		meta(charset="utf-8")
+		title addUser
+		meta(name="viewport" content="width=device-width")
+		link(rel="stylesheet" type="text/css" href="css/foundation.css")
+		link(rel="stylesheet" type="text/css" href="css/app.css")
+		script(src="js/vendor/foundation.js")
+	body
+		div(class="row")
+			div(class="small-10 small-offset-1 medium-10 medium-offset-1 large-10 large-offset-1 titOptions columns")
+				p(class="negrita") Agregar Empleado
+			div(class="small-12 medium-12 large-12 columns")
+				div(class="small-6 smll-offset-3 medium-6 medium-offset-3 large-5 large-offset-3 columns")
+					form(method="POST" action="")
+						div(class="row")
+							div(class="small-3 medium-3 large-3 columns")
+								label Nombre(s)
+							div(class="small-8 medium-8 large-8 columns")
+								input(type="text" class="radio" required name="nombre" style="height: 20px;")
+						div(class="row")
+							div(class="small-3 medium-3 large-3 columns")
+								label A.Paterno
+							div(class="small-8 medium-8 large-8 columns")
+								input(type="text" name="paterno" required class="radio" style="height: 20px;")
+						div(class="row")
+							div(class="small-3 medium-3 large-3 columns")
+								label A.Materno
+							div(class="small-8 medium-8 large-8 columns")
+								input(type="text" name="materno" required class="radio" style="height: 20px;")
+						div(class="row")
+							div(class="small-3 medium-3 large-3 columns")
+								label Direccion
+							div(class="small-7 medium-7 large-8 columns")
+								input(type="text" name="direccion" required class="radio" style="height: 20px;")
+						div(class="row")
+							div(class="small-3 medium-3 large-3 columns")
+								label Telefono
+							div(class="small-7 medium-7 large-8 columns")
+								input(type="text" name="telefono" required class="radio" style="height: 20px;")
+						div(class="row")
+							div(class="small-3 medium-3 large-3 columns")
+								label E-Mail
+							div(class="small-7 medium-7 large-8 columns")
+								input(type="text" name="mail" required class="radio" style="height: 20px;")
+						div(class="row")
+							div(class="small-3 medium-3 large-3 columns")
+								label FechaNac
+							div(class="small-7 medium-7 large-8 columns")
+								input(type="date" name="fecha" required class="radio" style="height: 20px;")
+						div(class="row")
+							div(class="small-3 medium-3 large-3 columns")
+								label idTrjeta
+							div(class="small-7 medium-7 large-8 columns")
+								section
+									select(name="tarjeta" class="radio" style="height: 20px;")
+										option 9f4f58b6-0c75-4c93-beca-925eace359ef
+										option 6c460f5f-37fd-4f61-9aaf-ace2825a59ae
+						div(class="row")
+							div(class="large-4 large-offset-2 columns")
+								input(type="submit" name="btn" value="Guardar" class="button radio")
+							div(class="large-4 columns")
+								a(onclick="usuarios()" class="button radio") cancelar

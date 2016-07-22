@@ -2,25 +2,26 @@
  * database.js
  */
 
-module.exports = function (type, settings) {
+module.exports = function (type, settings,mongoose,cb) {
+    /*
+     * Initialize required modules
+    */
+    var mongoose = mongoose;
+
+    /*
+     * Vars
+     */
+    var collection = settings.collection;
+
     console.log('Specified motor database : ' + type);
-    var db = null;
 
-    /*
-     * Database to instantiate
-     */
-    var dbClass = require('./mongodb');
-    db = new dbClass(settings);
-      
-
-    /*
-     * Initialize the database object
-     */
-    db.connect(function (err) {
-        if (err) {
-            console.log('Error: could not connect to the database.');
+    mongoose.connect('mongodb://localhost:27017/'+ collection, function(err, res) {  
+        if(err) {
+            cb(true);
+        }
+        else{
+            console.log('Connected to the database', collection);
+            cb(false);
         }
     });
-
-    return db;
 }
