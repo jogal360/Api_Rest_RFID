@@ -11,23 +11,19 @@ var Entradas     = mongoose.model('entradas'),
     TIncidencias = mongoose.model('tipos_incidencias'),
     Empleados    = mongoose.model('empleados');
 
-//GET - Obtiene todos los empleados
-exports.failure = function(req, res) {   
-  console.log('GET /login-failure');
-  res.status(200).render('index', { message: req.flash('message') });
-};
+
 
 //GET - Obtiene todos los empleados
 exports.dashboard = function(req, res) {  
-  console.log('GET /dashboard');
+  if(!req.user){
+    console.log('GET /home');
+    res.status(200).render('index');
+  }
+  else{
+    console.log('GET /dashboard', req.user);
   res.status(200).render('administrador');
-  // Empleados.find(function(err, empleados) {
-  //   if(err)
-  //     res.send(500, err.message);
-  //   console.log('GET /empleados');
-  //   res.status(200).render('incidencias');
-  //   //jsonp(empleados);
-  // });
+  }
+  
 };
 
 //GET - Obtiene un empleado en base a un id

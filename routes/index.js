@@ -3,16 +3,16 @@ module.exports = function (app,router,ctrl,passport){
 	var ctrlLogin = ctrl.login;
 
 	// Login //
-	 	//Login fallido
-		router.route("/failure-login")
-			.get(ctrlLogin.failure);
-		//Login ok
-		router.route("/dashboard")
-			.get(ctrlLogin.dashboard);
-			//.post(ctrl.addEmpleado);
+	router.get("/dashboard", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlLogin.dashboard(req,res);
+	});
 
 	router.route("/")
-			.get(ctrlEmpleados.findAllEmpleados);
+			.get(ctrlLogin.dashboard);
 	//Raiz
 	router.route("/addUser")
 		.get(ctrlEmpleados.findAllEmpleados1);
@@ -22,7 +22,6 @@ module.exports = function (app,router,ctrl,passport){
 	router.route("/login")
 		.post(passport.authenticate('local', {
     	successRedirect: '/dashboard',
-   		failureRedirect: '/addUser'
+   		failureRedirect: '/'
   	}));
-	
 }

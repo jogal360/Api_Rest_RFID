@@ -40,6 +40,7 @@ var router = express.Router();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(methodOverride());
+app.use(flash());
 app.use(require('express-session')({
     secret: 'accesslogic',
     resave: false,
@@ -48,7 +49,6 @@ app.use(require('express-session')({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(router);
-app.use(flash());
 //app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(express.static('public'));
@@ -72,20 +72,17 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(user, done) {
   done(null, user);
 });
-passport.use('login', new LocalStrategy(
+passport.use(new LocalStrategy(
   function(username, password, done) {
-  	console.log('dentro');
     process.nextTick(function () {
 	  login.findOne({'usuario': username},
 		function(err, user) {
-			console.log(err,user);
 			if (err)
 				return done(err);
 			if (!user)
 				return done(null, false);
 			if (user.password != password)
 				return done(null, false);
-			console.log("logueo exitoso");
 			return done(null, user);
 		});
     });
