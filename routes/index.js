@@ -1,12 +1,18 @@
 module.exports = function (app,router,ctrl,passport){
 	var ctrlEmpleados = ctrl.empleados;
-	//console.log(ctrl);
+	var ctrlLogin = ctrl.login;
 
-	//Raiz
+	// Login //
+	 	//Login fallido
+		router.route("/failure-login")
+			.get(ctrlLogin.failure);
+		//Login ok
+		router.route("/dashboard")
+			.get(ctrlLogin.dashboard);
+			//.post(ctrl.addEmpleado);
+
 	router.route("/")
-		.get(ctrlEmpleados.findAllEmpleados);
-		//.post(ctrl.addEmpleado);
-
+			.get(ctrlEmpleados.findAllEmpleados);
 	//Raiz
 	router.route("/addUser")
 		.get(ctrlEmpleados.findAllEmpleados1);
@@ -15,7 +21,7 @@ module.exports = function (app,router,ctrl,passport){
 	//Post login
 	router.route("/login")
 		.post(passport.authenticate('local', {
-    	successRedirect: '/',
+    	successRedirect: '/dashboard',
    		failureRedirect: '/addUser'
   	}));
 	

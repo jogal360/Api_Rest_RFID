@@ -11,6 +11,7 @@ var express        = require("express"),
     passport 	   = require('passport'),
     LocalStrategy  = require('passport-local').Strategy,
     path		   = require('path'),
+    flash 		   = require('connect-flash'),
     https          = require('https');
 
 
@@ -47,6 +48,7 @@ app.use(require('express-session')({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(router);
+app.use(flash());
 //app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use(express.static('public'));
@@ -70,16 +72,20 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(user, done) {
   done(null, user);
 });
-passport.use(new LocalStrategy(
+passport.use('login', new LocalStrategy(
   function(username, password, done) {
-   
+  	console.log('dentro');
     process.nextTick(function () {
-	  login.findOne({'usuario':username},
+	  login.findOne({'usuario': username},
 		function(err, user) {
-			if (err) { return done(err); console.log("error gral");}
-			if (!user) { return done(null, false); console.log("no user");}
-			if (user.password != password) { return done(null, false); console.log("user ok pass not");}
-			console.log("ok");
+			console.log(err,user);
+			if (err)
+				return done(err);
+			if (!user)
+				return done(null, false);
+			if (user.password != password)
+				return done(null, false);
+			console.log("logueo exitoso");
 			return done(null, user);
 		});
     });
@@ -91,6 +97,9 @@ passport.use(new LocalStrategy(
  */
 routes = require('./routes')(app,router,controllers, passport);
 
+/*
+ * Launch Server
+ */
 database(conf.db, conf[conf.db], mongoose, function(err){
 	if(err){
 		console.log('ERROR: connecting to Database. ' + err);
@@ -103,7 +112,6 @@ database(conf.db, conf[conf.db], mongoose, function(err){
 		https.createServer({
 			key : fs.readFileSync(key),
 			cert : fs.readFileSync(cer)
-
 		},app).listen(https_port, function(){
 			console.log('HTTPS server listening on port %s in %s mode', https_port, app.get('env'));
 		}); 
