@@ -60,8 +60,14 @@ module.exports = function (app,router,ctrl,passport){
 		ctrlEmpleados.incidencias(req,res);
 	});
 
+	//Delete user
 	router.delete('/users/:id', function (req, res) {
         console.log('borarr');
+    });
+
+	//Put user
+	router.put('/users/:id', function (req, res) {
+        console.log('PUT');
     });
 
 	///Cerrar sesión

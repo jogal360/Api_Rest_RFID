@@ -72,7 +72,9 @@ body
 											td(class="text-center")=val.userAlias
 											td(class="text-center")=val.userPwd
 											td(class="text-center")
-												input(type="text" value="Modificar" class="success button radio")
+												form(method='POST', action='/users/'+val._id+'?_method=PUT')
+													button(type='submit' class="success button radio") Modificar
+												
 											td(class="text-center")
 												form(method='POST', action='/users/'+val._id+'?_method=DELETE')
 													button(type='submit' class="alert button radio") Delete
