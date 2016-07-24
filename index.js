@@ -40,6 +40,7 @@ var router = express.Router();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(methodOverride());
+app.use(methodOverride('_method'));
 app.use(flash());
 app.use(require('express-session')({
     secret: 'accesslogic',

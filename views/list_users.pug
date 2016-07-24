@@ -67,14 +67,15 @@ body
 
 									each val, index in users
 										tr
-											td=val._id
-											td=val.nombre + " "+ val.apPaterno + " " + val.apMaterno
-											td=val.userAlias
-											td=val.userPwd
-											td
+											td(class="text-center")=val._id
+											td(class="text-center")=val.nombre + " "+ val.apPaterno + " " + val.apMaterno
+											td(class="text-center")=val.userAlias
+											td(class="text-center")=val.userPwd
+											td(class="text-center")
 												input(type="text" value="Modificar" class="success button radio")
-											td 
-												input(type="text" value="Eliminar" class="alert button radio")
+											td(class="text-center")
+												form(method='POST', action='/users/'+val._id+'?_method=DELETE')
+													button(type='submit' class="alert button radio") Delete
 										
 									
 	div(class="small-12 medium-12 large-12 verde columns" id="footer")
