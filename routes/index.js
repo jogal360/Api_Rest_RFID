@@ -61,12 +61,31 @@ module.exports = function (app,router,ctrl,passport){
 	});
 
 	//Delete user
-	router.delete('/users/:id', function (req, res) {
-        console.log('borarr');
+	router.delete('/users/:id', function (req, res,next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+    }, function(req,res){
+    	console.log('DELETE');
     });
 
+    //Get user
+	router.get('/users/:id', function (req, res,next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+    }, function(req,res){
+    	console.log('GET USER BY ID');
+    });
+
+
 	//Put user
-	router.put('/users/:id', function (req, res) {
+	router.put('/users/:id', function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	},function(req,res){
+
         console.log('PUT');
     });
 

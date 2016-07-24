@@ -7,6 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Joaquin GALVAN",
+  "repository" : { 
+    "type" : "git"
+  , "url" : "https://github.com/jogal360/Api_Rest_RFID"
+  },
   "license": "MIT",
   "dependencies": {
     "async": "^2.0.1",
@@ -15,7 +19,6 @@
     "express": "",
     "express-session": "^1.14.0",
     "fs": "",
-    "jade": "^1.11.0",
     "method-override": "",
     "mongo": "",
     "mongodb": "",
