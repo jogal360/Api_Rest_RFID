@@ -11,8 +11,7 @@ exports = module.exports = function(mongoose) {
     direccion:  String ,
     telefono:   Number ,
     email:      String ,
-    fechaNac:   Date,
-    iLogin     :  { type: Schema.ObjectId, ref: 'logins' } 
+    fechaNac:   Date
   });
 
   mongoose.model('empleados', empleado); 

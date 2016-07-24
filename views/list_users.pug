@@ -69,8 +69,8 @@ body
 										tr
 											td=val._id
 											td=val.nombre + " "+ val.apPaterno + " " + val.apMaterno
-											td login
-											td secreto
+											td=val.userAlias
+											td=val.userPwd
 											td
 												input(type="text" value="Modificar" class="success button radio")
 											td 

@@ -9,6 +9,7 @@
   "author": "Joaquin GALVAN",
   "license": "MIT",
   "dependencies": {
+    "async": "^2.0.1",
     "body-parser": "",
     "connect-flash": "^0.1.1",
     "express": "",

@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var ObjectId = require('mongoose').Types.ObjectId; 
+var async = require('async');
 //Models
 var Entradas     = mongoose.model('entradas'),
     Eventos      = mongoose.model('eventos'),
@@ -30,14 +31,39 @@ exports.horario = function(req, res) {
 };
 
 exports.users = function(req, res) {  
+  var emps = [];
    findById(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
     Empleados.find({}, function(err,empleados){
       if(err)
         res.send(500, err.message);
+      Logins.find({},function(err,logins){
+        if(err)
+          res.send(500, err.message);
+        async.forEachOf(logins, function(value,key,cb){
+          var id = value._id;
+          var usuario = value.usuario;
+          var password = value.password;
+          Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
+            if(err)
+              cb(true);
+            emple["idLogueo"] = id;
+            emple["userAlias"] = usuario;
+            emple["userPwd"] = password;
+            emps.push(emple);
+            cb();
+          });
+          
+        },function (err){
+          if(err)
+            res.send(500, err.message);
+          res.status(200).render('list_users',{user: empleado, users:emps}); 
+        });
+
+      });
       //console.log(empleados);
-      res.status(200).render('list_users',{user: empleado, users:empleados}); //, { message: req.flash('message') }
+      
     });
   });
   
@@ -56,8 +82,10 @@ exports.findAllEmpleados = function(req, res) {
   Empleados.findOne().where("iLogin.$id", "ObjectId('575352784eec4974bba6b713')").exec(function(err, empleados) {
     if(err)
     	res.send(500, err.message);
-
-   	console.log('GET /empleados', empleados);
+    var id = req.user._id;
+    console.log(id);
+    console.log(empleado)
+   	//console.log('GET /empleados', empleados);
     res.status(200).jsonp(empleados);
     //jsonp(empleados);
   });
