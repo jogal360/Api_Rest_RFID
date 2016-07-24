@@ -21,26 +21,22 @@ body(id="BUsers")
 			div(class="small-5 small-offset-2 medium-5 medium-offset-2 large-5 large-offset-2 foto")
 				img(src="img/foto.png")
 			div(class="small-12 medium-12 large-12 columns user")
-				p #{user.nombre} #{user.apPaterno} #{user.apMaterno}
+				p nombre de usuario
 			div(class="menu large-12 row expanded item")
 				li
-					a(href="/calendario") Calendario
+					a(onclick="calendario()") Calendario
 			div(class="menu large-12 row expanded item")
 				li
-					a(href="/horario") Horario
+					a(onclick="horario()") Horario
 			div(class="menu large-12 row expanded item")
 				li
-					a(href="/users") Usuarios	
+			
 			div(class="menu large-12 row expanded item")
 				li
-					a(href="/incidencias") Incidencias
-			div(class="menu large-12 row expanded item")
-				li
-					a(href="/signout") Cerrar Sesión	
+					a(href="index.html") Cerrar Sesión	
 		div(class="small-10 medium-10 large-10 columns")
 			div(id="workarea")
 				
 	div(class="small-12 medium-12 large-12 verde columns" id="footer")
 			p(class="foot") COLEGIO AMERICA CCT 15PJN5044S Vicente Guerrero #29 Col Centro San Juan, Teotihuacan, México
 			p(class="foot1") Tel: 015919560161 mami_america_@hotmail.com
-	script(src="js/funciones.js" type="text/javascript" charset="utf-8" async)

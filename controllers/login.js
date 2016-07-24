@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-
+var ObjectId = require('mongoose').Types.ObjectId; 
 //Models
 var Entradas     = mongoose.model('entradas'),
     Eventos      = mongoose.model('eventos'),
@@ -12,16 +12,37 @@ var Entradas     = mongoose.model('entradas'),
     Empleados    = mongoose.model('empleados');
 
 
+exports.homeLogin = function(req, res) {
+  //recien abrir el sitio
+  if(!req.user && !req.session.errorlogin)
+    res.status(200).render('index'); //, { message: req.flash('message') }
+  //Ya loguead
+  if(req.user ){
+    res.redirect('/dashboard');
+  }
+  if(req.session.errorlogin && !req.user)
+    res.status(200).render('index', { message: req.flash('message') });
+  
+};
+
+exports.failure = function(req, res) {
+  req.session.errorlogin = true;
+  res.redirect('/');
+};
 
 //GET - Obtiene todos los empleados
 exports.dashboard = function(req, res) {  
   if(!req.user){
-    console.log('GET /home');
     res.status(200).render('index');
   }
   else{
-    console.log('GET /dashboard', req.user);
-  res.status(200).render('administrador');
+    var id = req.user._id;
+    Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, empleados) {
+      if(err)
+        res.send(500, err.message);
+      req.session.errorlogin = false;
+      res.status(200).render('administrador',{user: empleados});
+    });
   }
   
 };

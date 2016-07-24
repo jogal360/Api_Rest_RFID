@@ -11,17 +11,58 @@ module.exports = function (app,router,ctrl,passport){
 		ctrlLogin.dashboard(req,res);
 	});
 
-	router.route("/")
-			.get(ctrlLogin.dashboard);
-	//Raiz
-	router.route("/addUser")
-		.get(ctrlEmpleados.findAllEmpleados1);
+	router.route("/login-failure")
+	.get(ctrlLogin.failure);
 
+	router.route("/")
+	.get(ctrlLogin.homeLogin);
 
 	//Post login
 	router.route("/login")
-		.post(passport.authenticate('local', {
-    	successRedirect: '/dashboard',
-   		failureRedirect: '/'
-  	}));
+	.post(passport.authenticate('local', {
+		successRedirect: '/dashboard',
+		failureRedirect: '/login-failure'
+	}));
+
+	//Get Calendar
+	router.get("/calendario", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlEmpleados.calendar(req,res);
+	});
+
+	//Get Horario
+	router.get("/horario", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlEmpleados.horario(req,res);
+	});
+
+	//Get Usuarios
+	router.get("/users", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlEmpleados.users(req,res);
+	});
+
+	//Get Incidencias
+	router.get("/incidencias", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlEmpleados.incidencias(req,res);
+	});
+
+	///Cerrar sesión
+	router.get('/signout', function(req, res) {
+		req.logout();
+		res.redirect('/');
+	});
 }

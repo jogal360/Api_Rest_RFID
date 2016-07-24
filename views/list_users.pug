@@ -39,40 +39,44 @@ body
 					a(href="/signout") Cerrar Sesión	
 		div(class="small-10 medium-10 large-10 columns")
 			div(id="workarea")
-				div(class="small-10 small-offset-1 medium-10 medium-offset-1 large-10 large-offset-1 titOptions columns")
-					p(class="negrita") Incidencias
-				div(class="small-12 medium-12 large-12 columns")
-					div(class="small-10 smll-offset-2 medium-10 medium-offset-2 large-10 large-offset-1 columns ")
-						table(class="stack")
-							thead
-								tr(class="colorCell")
-									th(width="100" class="encT") ID
-									th(width="150" class="encT") Nombre
-									th(width="150" class="encT") Asignatura
-									th(width="150" class="encT") Horario
-									th(width="150" class="encT") Acciones
-									th(width="150" class="encT") Acciones
-								tr
-									td(class="colorCell") Here
-									td dadasdasd
-									td Content Goes Here
-									td Content Goes Here
-									td Content Goes Here
-									td Content Goes Here
-								tr
-									td(class="colorCell") Goes Here
-									td This is longer Content Goes Here 
-									td Content Goes Here
-									td Content Goes Here
-									td Content Goes Here
-									td Content Goes Here
-								tr
-									td(class="colorCell") Content Goes Here
-									td This is longer Content Goes Here Donec id elit non mi porta gravida at eget metus.
-									td Content Goes Here
-									td Content Goes Here
-									td Content Goes Here
-									td Content Goes Here
+				div(class="row")
+					div(class="large-12")
+						div(class="small-2 medium-2 large-2 large-offset-2 columns")
+							br
+							label Buscar empleado
+
+						div(class="small-2 medium-2 large-3 columns")
+							br
+							input(type="text" id="right-label" class="radio")
+						
+						div(class="small-3 medium-3 large-5 columns")
+							br
+							a(class="warning button radio" href="#") Buscar
+					
+					div(class="small-12 medium-12 large-12 columns")
+						div(class="small-10 smll-offset-2 medium-10 medium-offset-2 large-10 large-offset-1 columns ")
+							table(class="stack")
+								thead
+									tr(class="colorCell")
+										th(width="100" class="encT") ID
+										th(width="150" class="encT") Nombre
+										th(width="150" class="encT") Usuario
+										th(width="150" class="encT") Contraseña
+										th(width="150" class="encT") Modificar
+										th(width="150" class="encT") Eliminar
+
+									each val, index in users
+										tr
+											td=val._id
+											td=val.nombre + " "+ val.apPaterno + " " + val.apMaterno
+											td login
+											td secreto
+											td
+												input(type="text" value="Modificar" class="success button radio")
+											td 
+												input(type="text" value="Eliminar" class="alert button radio")
+										
+									
 	div(class="small-12 medium-12 large-12 verde columns" id="footer")
 			p(class="foot") COLEGIO AMERICA CCT 15PJN5044S Vicente Guerrero #29 Col Centro San Juan, Teotihuacan, México
 			p(class="foot1") Tel: 015919560161 mami_america_@hotmail.com

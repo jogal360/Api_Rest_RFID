@@ -76,7 +76,7 @@ passport.use(new LocalStrategy(
   function(username, password, done) {
     process.nextTick(function () {
 	  login.findOne({'usuario': username},
-		function(err, user) {
+		function(err, user) { 
 			if (err)
 				return done(err);
 			if (!user)

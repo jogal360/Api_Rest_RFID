@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-
+var ObjectId = require('mongoose').Types.ObjectId; 
 //Models
 var Entradas     = mongoose.model('entradas'),
     Eventos      = mongoose.model('eventos'),
@@ -11,37 +11,67 @@ var Entradas     = mongoose.model('entradas'),
     TIncidencias = mongoose.model('tipos_incidencias'),
     Empleados    = mongoose.model('empleados');
 
+
 //GET - Obtiene todos los empleados
-exports.findAllEmpleados = function(req, res) {  
-  Empleados.find(function(err, empleados) {
-    if(err)
-    	res.send(500, err.message);
-   	console.log('GET /empleados');
-    res.status(200).render('index');
-    //jsonp(empleados);
+exports.calendar = function(req, res) {  
+  findById(req, function(err, empleado){
+    if (err)
+      res.send(500, err.message);
+    res.status(200).render('calendario',{user: empleado}); //, { message: req.flash('message') }
+  });
+};
+
+exports.horario = function(req, res) {  
+  findById(req, function(err, empleado){
+    if (err)
+      res.send(500, err.message);
+    res.status(200).render('horario',{user: empleado}); //, { message: req.flash('message') }
+  });
+};
+
+exports.users = function(req, res) {  
+   findById(req, function(err, empleado){
+    if (err)
+      res.send(500, err.message);
+    Empleados.find({}, function(err,empleados){
+      if(err)
+        res.send(500, err.message);
+      //console.log(empleados);
+      res.status(200).render('list_users',{user: empleado, users:empleados}); //, { message: req.flash('message') }
+    });
+  });
+  
+};
+
+exports.incidencias = function(req, res) {  
+  findById(req, function(err, empleado){
+    if (err)
+      res.send(500, err.message);
+    res.status(200).render('incidencias',{user: empleado}); //, { message: req.flash('message') }
   });
 };
 
 //GET - Obtiene todos los empleados
-exports.findAllEmpleados1 = function(req, res) {  
-  Empleados.find(function(err, empleados) {
+exports.findAllEmpleados = function(req, res) {  
+  Empleados.findOne().where("iLogin.$id", "ObjectId('575352784eec4974bba6b713')").exec(function(err, empleados) {
     if(err)
-      res.send(500, err.message);
-    console.log('GET /empleados');
-    res.status(200).render('incidencias');
+    	res.send(500, err.message);
+
+   	console.log('GET /empleados', empleados);
+    res.status(200).jsonp(empleados);
     //jsonp(empleados);
   });
 };
 
 //GET - Obtiene un empleado en base a un id
-exports.findById = function(req, res) {  
-    Empleados.findById(req.params.id, function(err, empleado) {
-      if(err)
-        return res.send(500).send(err.message);
-      console.log('GET /empleados/' + req.params.id);
-      console.log(empleado);
-      res.status(200).render('addUser');
-    });
+function findById (req, cb) {  
+  var id = req.user._id;
+  Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, empleados) {
+    if(err)
+      cb(true);
+    req.session.errorlogin = false;
+    cb(false, empleados);
+  });
 };
 
 //POST - Guarda un empleado
