@@ -5,6 +5,7 @@
 				center: 'title',
 				right: 'month,basicWeek,basicDay'
 			},
+			lang: 'es',
 			defaultDate: '2016-07-12',
 			editable: true,
 			eventLimit: true, // allow "more" link when too many events
