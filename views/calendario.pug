@@ -9,13 +9,21 @@ html(lang="es")
 		script(src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous")
 		script(src="js/vendor/foundation.js")
 		script(src="js/app.js" type="text/javascript" charset="utf-8" async)
+
+		link(href='css/fullcalendar.css' rel='stylesheet')
+		link(href='css/fullcalendar.print.css' rel='stylesheet' media='print')
+		script(src='js/moment.min.js')
+		script(src='js/jquery.min.js')
+		script(src='js/fullcalendar.min.js')
+		script(src='js/ca.js')
+		
 body
 	div(class="row expanded")
 		div(class="small-12 medium-12 large-12 columns verde")
 			div(class="small-12 medium-12 large-12 columns")
 				img(src="img/Logo.png" class="logoP")
 				p(class="nombre negrita") Access Logic
-				p(class="titulo negrita") Sistema de Administración de Accesos
+				br
 	div(class="row expanded")
 		div(class="small-2 medium-2 large-2 columns me")
 			div(class="small-5 small-offset-2 medium-5 medium-offset-2 large-5 large-offset-2 foto")
@@ -39,39 +47,7 @@ body
 					a(href="/signout") Cerrar Sesión	
 		div(class="small-10 medium-10 large-10 columns")
 			div(id="workarea")
-				div(class="row")
-					div(class="small-10 small-offset-1 medium-10 medium-offset-1 large-10 large-offset-1 titOptions columns ")
-						p(class="negrita") CALENDARIO
-					div(class="small-12 medium-12 large-12 columns")
-						div(class="small-10 smll-offset-2 medium-10 medium-offset-2 large-10 large-offset-1 columns ")
-							table(class="stack")
-								thead
-									tr(class="colorCell")
-										th(width="100") Lunes
-										th(width="150") Martes
-										th(width="150") Miércoles
-										th(width="150") Jueves
-										th(width="150") Viernes
-								tbody
-									tr
-										td(class="colorCell") Here
-										td dadasdasd
-										td Content Goes Here
-										td Content Goes Here
-										td Content Goes Here
-									tr
-										td(class="colorCell") Goes Here
-										td This is longer Content Goes Here 
-										td Content Goes Here
-										td Content Goes Here
-										td Content Goes Here
-									tr
-										td(class="colorCell") Content Goes Here
-										td This is longer Content Goes Here Donec id elit non mi porta gravida at eget metus.
-										td Content Goes Here
-										td Content Goes Here
-										td Content Goes Here
+				div(id='calendar' style="max-width:600px; margin:0 auto; font-size:11px;")
 	div(class="small-12 medium-12 large-12 verde columns" id="footer")
 			p(class="foot") COLEGIO AMERICA CCT 15PJN5044S Vicente Guerrero #29 Col Centro San Juan, Teotihuacan, México
 			p(class="foot1") Tel: 015919560161 mami_america_@hotmail.com
-	script(src="js/funciones.js" type="text/javascript" charset="utf-8" async)

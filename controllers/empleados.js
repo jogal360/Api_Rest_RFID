@@ -58,7 +58,14 @@ exports.users = function(req, res) {
         },function (err){
           if(err)
             res.send(500, err.message);
-          res.status(200).render('list_users',{user: empleado, users:emps}); 
+          if(req.session.errDel){
+            res.status(200).render('list_users',{user: empleado, users:emps,message: req.flash('message')}); 
+          }
+          else{
+            res.status(200).render('list_users',{user: empleado, users:emps});   
+          }
+          //req.session.errDel=false;
+          
         });
 
       });
@@ -75,6 +82,61 @@ exports.incidencias = function(req, res) {
       res.send(500, err.message);
     res.status(200).render('incidencias',{user: empleado}); //, { message: req.flash('message') }
   });
+};
+
+exports.updateEmpleadoView = function(req, res) {
+  findById(req, function(err, empleado){
+    if (err)
+      res.send(500, err.message);
+    Empleados.findById(req.params.id, function(err, empleadoMod) {
+      if(err)
+        cb(true);
+      var empleadoModSend = {};
+      var fecha = new Date(empleadoMod.fechaNac);
+      var mes = fecha.getMonth() +1;     // 11
+      var dia = fecha.getDate()+1;      // 29
+      var anio = fecha.getYear();
+      if(dia > 0 && dia < 10)
+        dia = "0"+dia;
+      fecha = dia +"/"+mes+"/"+anio;
+      empleadoModSend._id = req.params.id;
+      empleadoModSend.nombre = empleadoMod.nombre;
+      empleadoModSend.apPaterno = empleadoMod.apPaterno;
+      empleadoModSend.apMaterno = empleadoMod.apMaterno;
+      empleadoModSend.direccion = empleadoMod.direccion;
+      empleadoModSend.telefono = empleadoMod.telefono;
+      empleadoModSend.email = empleadoMod.email;
+      empleadoModSend.fechaNac = fecha;
+      Logins.find({},function(err,logins){
+        if(err)
+          res.send(500, err.message);
+        async.forEachOf(logins, function(value,key,cb){
+          var id = value._id;
+          var usuario = value.usuario;
+          var password = value.password;
+          Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
+            if(err)
+              cb(true);
+            if(emple._id == empleadoModSend._id){
+              empleadoModSend["idLogueo"] = id;
+              empleadoModSend["userAlias"] = usuario;
+              empleadoModSend["userPwd"] = password;
+            }
+            cb();
+          });
+          
+        },function (err){
+          if(err)
+            res.send(500, err.message);
+          //console.log(empleadoModSend);
+          res.status(200).render('modificarEmpleado',{userModificar: empleadoModSend, user:empleado});
+        });
+
+      });
+      
+    });
+  });
+  
 };
 
 //GET - Obtiene todos los empleados
@@ -98,6 +160,7 @@ function findById (req, cb) {
     if(err)
       cb(true);
     req.session.errorlogin = false;
+    req.session.idUserActive = empleados._id;
     cb(false, empleados);
   });
 };
@@ -127,6 +190,7 @@ exports.addEmpleado = function(req, res) {
 //PUT - Actualiza un empleado existente
 exports.updateEmpleado = function(req, res) {  
   Empleados.findById(req.params.id, function(err, empleado) {
+    var idL = req.params.id;
     empleado.nombre     = req.body.nombre,
     empleado.apPaterno  = req.body.apPaterno,
     empleado.apMaterno  = req.body.apMaterno,
@@ -138,7 +202,40 @@ exports.updateEmpleado = function(req, res) {
     empleado.save(function(err) {
       if(err)
         return res.status(500).send(err.message);
-      res.status(200).jsonp(empleado);
+      Logins.find({},function(err,logins){
+        if(err)
+          res.send(500, err.message);
+        async.forEachOf(logins, function(value,key,cb){
+          var id = value._id;
+          var usuario = value.usuario;
+          var password = value.password;
+          Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
+            if(err){
+              cb(true);
+            }
+            if(emple._id == idL){
+              Logins.findById(id, function(err, logueo){
+                logueo.usuario = req.body.usuario;
+                logueo.password = req.body.password;
+
+                logueo.save(function(err){
+                  if(err)
+                    cb(true);
+                });
+              });
+            }
+
+            cb();
+          });
+          
+        },function (err){
+          if(err)
+            res.send(500, err.message);
+          //console.log(empleadoModSend);
+          res.redirect("/users");
+        });
+      });
+      
     });
   });
 };
@@ -146,10 +243,51 @@ exports.updateEmpleado = function(req, res) {
 //DELETE - Delete a TVShow with specified ID
 exports.deleteEmpleado = function(req, res) {  
   Empleados.findById(req.params.id, function(err, empleado) {
-    empleado.remove(function(err) {
-      if(err)
-        return res.status(500).send(err.message);
-      res.status(200).send();
-    })
+    if(err)
+      res.send(500, err.message);
+    if( req.session.idUserActive == req.params.id){
+      req.session.errDel = true;
+      return res.redirect('/users');
+    }
+    req.session.errDel=false;
+    var idL = req.params.id;
+    Logins.find({},function(err,logins){
+        if(err)
+          res.send(500, err.message);
+        async.forEachOf(logins, function(value,key,cb){
+          var id = value._id;
+          var usuario = value.usuario;
+          var password = value.password;
+          Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
+            if(err){
+              cb(true);
+            }
+            if(emple._id == idL){
+              Logins.findById(id, function(err, logueo){
+                if(err)
+                  cb(true)
+                logueo.remove(function(err){
+                  if(err)
+                    cb(true)
+
+                })
+              });
+            }
+
+            cb();
+          });
+          
+        },function (err){
+          if(err)
+            res.send(500, err.message);
+          //console.log(empleadoModSend);
+          empleado.remove(function(err) {
+            if(err)
+              return res.status(500).send(err.message);
+            res.redirect("/users");
+          })
+        });
+      });
+    
   });
 };

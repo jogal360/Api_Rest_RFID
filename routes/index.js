@@ -66,7 +66,7 @@ module.exports = function (app,router,ctrl,passport){
 			return next();
 		res.redirect('/');
     }, function(req,res){
-    	console.log('DELETE');
+    	ctrlEmpleados.deleteEmpleado(req,res);
     });
 
     //Get user
@@ -75,7 +75,7 @@ module.exports = function (app,router,ctrl,passport){
 			return next();
 		res.redirect('/');
     }, function(req,res){
-    	console.log('GET USER BY ID');
+    	ctrlEmpleados.updateEmpleadoView(req,res);
     });
 
 
@@ -85,8 +85,8 @@ module.exports = function (app,router,ctrl,passport){
 			return next();
 		res.redirect('/');
 	},function(req,res){
-
-        console.log('PUT');
+		//console.log('DELETE');
+       ctrlEmpleados.updateEmpleado(req,res);
     });
 
 	///Cerrar sesión
