@@ -4,6 +4,7 @@ exports = module.exports = function(mongoose) {
 
   var tEmpleado = mongoose.model('tipos_empleados');
   var Logins       = mongoose.model('logins');
+  var Tarjetas     = mongoose.model('tarjetas');
   var empleado = new Schema({  
     nombre:     String ,
     apPaterno:  String ,
@@ -11,7 +12,10 @@ exports = module.exports = function(mongoose) {
     direccion:  String ,
     telefono:   Number ,
     email:      String ,
-    fechaNac:   Date
+    fechaNac:   Date,
+    tEmpleado : { type: Schema.ObjectId, ref: 'tipos_empleados'},
+    iLogin : { type: Schema.ObjectId, ref: 'logins' },
+    iTarjeta: { type: Schema.ObjectId, ref: 'tarjetas' }
   });
 
   mongoose.model('empleados', empleado); 

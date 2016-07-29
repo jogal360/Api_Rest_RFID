@@ -42,6 +42,16 @@ module.exports = function (app,router,ctrl,passport){
 		ctrlEmpleados.horario(req,res);
 	});
 
+	//Get Incidencias
+	router.get("/incidencias", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlEmpleados.incidencias(req,res);
+	});
+
+
 	//Get Usuarios
 	router.get("/users", function (req, res, next) {
 		if (req.isAuthenticated())
@@ -51,13 +61,22 @@ module.exports = function (app,router,ctrl,passport){
 		ctrlEmpleados.users(req,res);
 	});
 
-	//Get Incidencias
-	router.get("/incidencias", function (req, res, next) {
+	//Get add-Usuario
+	router.get("/add-user", function (req, res, next) {
 		if (req.isAuthenticated())
 			return next();
 		res.redirect('/');
 	} , function(req, res){
-		ctrlEmpleados.incidencias(req,res);
+		ctrlEmpleados.addUserView(req,res);
+	});
+
+	//Post add-Usuario
+	router.post("/add-user", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlEmpleados.addEmpleado(req,res);
 	});
 
 	//Delete user

@@ -15,6 +15,7 @@ body
 			div(class="small-12 medium-12 large-12 columns")
 				img(src="img/Logo.png" class="logoP")
 				p(class="nombre negrita") Access Logic
+				br
 				
 	div(class="row expanded")
 		div(class="small-2 medium-2 large-2 columns me")
@@ -56,7 +57,8 @@ body
 				div(class="row expanded")
 					div(class="alert callout [radius round]" data-alert)
 						p(class="negrita text-center") No puedes eliminar al usuario con el que iniciaste sesión.
-					
+					div(class="small-12 medium-12 large-12 text-center")
+										a(href="/add-user" class="button radio") Agregar usuario
 					div(class="small-12 medium-12 large-12 columns")
 						div(class="small-10 smll-offset-2 medium-10 medium-offset-2 large-10 large-offset-1 columns ")
 							table(class="stack")
@@ -83,6 +85,8 @@ body
 												form(method='POST', action='/users/'+val._id+'?_method=DELETE')
 													button(type='submit' class="alert button radio") Delete
 			else	
+					div(class="small-12 medium-12 large-12 text-center")
+										a(href="/add-user" class="button radio") Agregar usuario
 					div(class="small-12 medium-12 large-12 columns")
 						div(class="small-10 smll-offset-2 medium-10 medium-offset-2 large-10 large-offset-1 columns ")
 							table(class="stack")

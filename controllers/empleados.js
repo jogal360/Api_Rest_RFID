@@ -76,6 +76,22 @@ exports.users = function(req, res) {
   
 };
 
+exports.addUserView = function(req, res) {  
+  findById(req, function(err, empleado){
+    if (err)
+      res.send(500, err.message);
+    Tarjetas.find({"estado":"inactivo"},function(err, tarj){
+      if(err)
+        res.send(500, err.message);
+      TEmpleados.find({}, function(err, tEmps){
+        if(err)
+          res.send(500, err.message);
+        res.status(200).render('addUser',{user: empleado, cards:tarj, puestos:tEmps}); //, { message: req.flash('message') }
+      });
+    });
+  });
+};
+
 exports.incidencias = function(req, res) {  
   findById(req, function(err, empleado){
     if (err)
@@ -166,26 +182,36 @@ function findById (req, cb) {
 };
 
 //POST - Guarda un empleado
-exports.addEmpleado = function(req, res) {  
-  console.log('POST');
-  console.log(req.body);
+exports.addEmpleado = function(req, res) {
+  var serieTarjeta = req.body.serieTarjeta;
+  Tarjetas.findOne().where("serie", serieTarjeta).exec(function(err, tarjeta) {
+    if(err)
+      res.send(500, err.message);
+    tarjeta.estado = "activo";
+    tarjeta.save(function(err){
+      if(err)
+        res.send(500, err.message);
 
-  var empleado = new empleados({
-		nombre    : req.body.nombre,
-		apPaterno : req.body.apPaterno,
-		apMaterno : req.body.apMaterno,
-		direccion : req.body.direccion,
-		telefono  : req.body.telefono,
-		email     : req.body.email,
-		fechaNac  : req.body.fechaNac
-  });
+      var empleado = new Empleados({
+        nombre    : req.body.nombre,
+        apPaterno : req.body.apPaterno,
+        apMaterno : req.body.apMaterno,
+        direccion : req.body.direccion,
+        telefono  : req.body.telefono,
+        email     : req.body.email,
+        fechaNac  : req.body.fechaNac,
+        iTarjeta  : tarjeta._id
+      });
+      empleado.save(function(err, empleado) {
+        if(err) 
+         return res.status(500).send(err);
+       console.log(empleado);
+       res.redirect("/users");
+      });
 
-  empleado.save(function(err, empleado) {
-    if(err) 
-    	return res.status(500).send(err);
-    res.status(200).jsonp(empleado);
+    });
   });
-};
+}
 
 //PUT - Actualiza un empleado existente
 exports.updateEmpleado = function(req, res) {  
