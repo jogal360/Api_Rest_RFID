@@ -13,9 +13,9 @@ var Entradas     = mongoose.model('entradas'),
     Empleados    = mongoose.model('empleados');
 
 
-//GET - Obtiene todos los empleados
+//GET - Obtiene la vista de calendario
 exports.calendar = function(req, res) {  
-  findById(req, function(err, empleado){
+  findUserActive(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
     res.status(200).render('calendario',{user: empleado}); //, { message: req.flash('message') }
@@ -23,7 +23,7 @@ exports.calendar = function(req, res) {
 };
 
 exports.horario = function(req, res) {  
-  findById(req, function(err, empleado){
+  findUserActive(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
     res.status(200).render('horario',{user: empleado}); //, { message: req.flash('message') }
@@ -32,52 +32,24 @@ exports.horario = function(req, res) {
 
 exports.users = function(req, res) {  
   var emps = [];
-   findById(req, function(err, empleado){
+  findUserActive(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
-    Empleados.find({}, function(err,empleados){
+    findAllEmpleados(function(err,emps){
       if(err)
         res.send(500, err.message);
-      Logins.find({},function(err,logins){
-        if(err)
-          res.send(500, err.message);
-        async.forEachOf(logins, function(value,key,cb){
-          var id = value._id;
-          var usuario = value.usuario;
-          var password = value.password;
-          Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
-            if(err)
-              cb(true);
-            emple["idLogueo"] = id;
-            emple["userAlias"] = usuario;
-            emple["userPwd"] = password;
-            emps.push(emple);
-            cb();
-          });
-          
-        },function (err){
-          if(err)
-            res.send(500, err.message);
-          if(req.session.errDel){
-            res.status(200).render('list_users',{user: empleado, users:emps,message: req.flash('message')}); 
-          }
-          else{
-            res.status(200).render('list_users',{user: empleado, users:emps});   
-          }
-          //req.session.errDel=false;
-          
-        });
-
-      });
-      //console.log(empleados);
-      
+      if(req.session.errDel){
+        res.status(200).render('list_users',{user: empleado, users:emps,message: req.flash('message')}); 
+      }
+      else{
+        res.status(200).render('list_users',{user: empleado, users:emps});   
+      }
     });
   });
-  
 };
 
 exports.addUserView = function(req, res) {  
-  findById(req, function(err, empleado){
+  findUserActive(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
     Tarjetas.find({"estado":"inactivo"},function(err, tarj){
@@ -93,7 +65,7 @@ exports.addUserView = function(req, res) {
 };
 
 exports.incidencias = function(req, res) {  
-  findById(req, function(err, empleado){
+  findUserActive(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
     res.status(200).render('incidencias',{user: empleado}); //, { message: req.flash('message') }
@@ -101,86 +73,138 @@ exports.incidencias = function(req, res) {
 };
 
 exports.updateEmpleadoView = function(req, res) {
-  findById(req, function(err, empleado){
+  findUserActive(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
-    Empleados.findById(req.params.id, function(err, empleadoMod) {
-      if(err)
-        cb(true);
-      var empleadoModSend = {};
-      var fecha = new Date(empleadoMod.fechaNac);
+    var id = req.params.id;
+    findUserById(id, function(err, empleadoModSend){
+      if (err)
+        res.send(500, err.message);
+      
+      var fecha = new Date(empleadoModSend.fechaNac);
       var mes = fecha.getMonth() +1;     // 11
       var dia = fecha.getDate()+1;      // 29
       var anio = fecha.getYear();
       if(dia > 0 && dia < 10)
         dia = "0"+dia;
-      fecha = dia +"/"+mes+"/"+anio;
-      empleadoModSend._id = req.params.id;
-      empleadoModSend.nombre = empleadoMod.nombre;
-      empleadoModSend.apPaterno = empleadoMod.apPaterno;
-      empleadoModSend.apMaterno = empleadoMod.apMaterno;
-      empleadoModSend.direccion = empleadoMod.direccion;
-      empleadoModSend.telefono = empleadoMod.telefono;
-      empleadoModSend.email = empleadoMod.email;
-      empleadoModSend.fechaNac = fecha;
-      Logins.find({},function(err,logins){
-        if(err)
+      if(mes > 0 && mes < 10)
+        mes = "0"+mes;
+      anio="19"+anio;
+      fecha = anio +"-"+mes+"-"+dia;
+      empleadoModSend.fNac = fecha;
+      findTipoEmpleados(function(err,tEmps){
+         if(err)
           res.send(500, err.message);
-        async.forEachOf(logins, function(value,key,cb){
-          var id = value._id;
-          var usuario = value.usuario;
-          var password = value.password;
-          Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
-            if(err)
-              cb(true);
-            if(emple._id == empleadoModSend._id){
-              empleadoModSend["idLogueo"] = id;
-              empleadoModSend["userAlias"] = usuario;
-              empleadoModSend["userPwd"] = password;
-            }
-            cb();
-          });
-          
-        },function (err){
+        findCards(function(err, tarj){
           if(err)
             res.send(500, err.message);
+          tarj.push(empleadoModSend.iTarjeta);
           //console.log(empleadoModSend);
-          res.status(200).render('modificarEmpleado',{userModificar: empleadoModSend, user:empleado});
-        });
-
-      });
-      
+          res.status(200).render('modificarEmpleado',{userModificar: empleadoModSend, user:empleado, cards: tarj, puestos:tEmps});
+        })
+      })
     });
   });
-  
 };
 
-//GET - Obtiene todos los empleados
-exports.findAllEmpleados = function(req, res) {  
-  Empleados.findOne().where("iLogin.$id", "ObjectId('575352784eec4974bba6b713')").exec(function(err, empleados) {
-    if(err)
-    	res.send(500, err.message);
-    var id = req.user._id;
-    console.log(id);
-    console.log(empleado)
-   	//console.log('GET /empleados', empleados);
-    res.status(200).jsonp(empleados);
-    //jsonp(empleados);
+//Obtiene todos los empleados
+function findAllEmpleados(cb) {  
+  Empleados.find({})
+    .populate("tEmpleado")
+    .populate("iLogin")
+    .populate("iTarjeta")
+    .exec(function(err, empleados) {
+      if(err)
+        cb(true)
+      cb(false, empleados);
   });
 };
 
-//GET - Obtiene un empleado en base a un id
-function findById (req, cb) {  
+//Obtiene el empleado activo
+function findUserActive (req, cb) {  
   var id = req.user._id;
-  Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, empleados) {
+  Empleados.findOne()
+    .where("iLogin", ObjectId(id))
+    .populate("tEmpleado")
+    .populate("iLogin")
+    .populate("iTarjeta")
+    .exec(function(err, empleado) {
     if(err)
       cb(true);
     req.session.errorlogin = false;
-    req.session.idUserActive = empleados._id;
-    cb(false, empleados);
+    req.session.idUserActive = empleado._id;
+    cb(false, empleado);
   });
 };
 
+//Obtiene un empleado en base a un id
+function findUserById (id, cb) {  
+  var idd = id;
+  Empleados.findOne({"_id":ObjectId(idd)})
+    
+    .populate("tEmpleado")
+    .populate("iLogin")
+    .populate("iTarjeta")
+    .exec(function(err, empleado) {
+    if(err)
+      cb(true);
+    cb(false, empleado);
+  });
+};
+
+//Encontrar los tipos de empleados
+function findTipoEmpleados(cb){
+  TEmpleados.find({}, function(err, tEmps){
+    if(err)
+      cb(true);
+    cb(false,tEmps)
+  });
+}
+
+//Encontrar un tipo de empleado por nombre
+function findTipoEmpleadosByName(nombre, cb){
+  TEmpleados.findOne({"nombre":nombre}, function(err, tEmp){
+    if(err)
+      cb(true);
+    cb(false,tEmp)
+  });
+}
+
+//Encontrar un login en base a un nombre de usuario
+function findLoginById(id, cb){
+  Logins.findOne({"_id": ObjectId(id)}, function(err, login){
+    if(err)
+      cb(true);
+    cb(false,login)
+  });
+}
+
+//Encontrar las tarjetas
+function findCards(cb){
+  Tarjetas.find({"estado":"inactivo"}, function(err, cards){
+    if(err)
+      cb(true);
+    cb(false,cards)
+  });
+}
+
+//Encontrar la tarjeta por serie
+function findCardBySerie(serie, cb){
+  Tarjetas.findOne({"serie": serie}, function(err, card){
+    if(err)
+      cb(true);
+    cb(false,card)
+  });
+}
+
+//Encontrar la tarjeta por id
+function findCardById(id, cb){
+  Tarjetas.findOne({"_id": id}, function(err, card){
+    if(err)
+      cb(true);
+    cb(false,card)
+  });
+}
 //POST - Guarda un empleado
 exports.addEmpleado = function(req, res) {
   var serieTarjeta = req.body.serieTarjeta;
@@ -205,7 +229,7 @@ exports.addEmpleado = function(req, res) {
       empleado.save(function(err, empleado) {
         if(err) 
          return res.status(500).send(err);
-       console.log(empleado);
+       //console.log(empleado);
        res.redirect("/users");
       });
 
@@ -215,60 +239,86 @@ exports.addEmpleado = function(req, res) {
 
 //PUT - Actualiza un empleado existente
 exports.updateEmpleado = function(req, res) {  
-  Empleados.findById(req.params.id, function(err, empleado) {
-    var idL = req.params.id;
-    empleado.nombre     = req.body.nombre,
-    empleado.apPaterno  = req.body.apPaterno,
-    empleado.apMaterno  = req.body.apMaterno,
-    empleado.direccion  = req.body.direccion,
-    empleado.telefono   = req.body.telefono,
-    empleado.email      = req.body.email,
-    empleado.fechaNac   = req.body.fechaNac
-
-    empleado.save(function(err) {
+  //console.log(req.user);
+  var id = req.params.id;
+  var tipoEmpleado = req.body.tEmpleado;
+  var serieCard = req.body.serieTarjeta;
+  var username = req.body.username;
+  var password = req.body.password;
+  var isAdmin = req.body.isAdmin;
+  if(isAdmin == "No")
+    isAdmin = false;
+  else
+    isAdmin = true;
+  findUserById(id, function(err, user){
+    var idLogin = user.iLogin._id;
+    var idTarjeta = user.iTarjeta._id;
+    findTipoEmpleadosByName(tipoEmpleado, function(err, tipoEmp){
       if(err)
-        return res.status(500).send(err.message);
-      Logins.find({},function(err,logins){
+          return res.status(500).send(err.message);
+      var idTipoEmpleado = tipoEmp._id;
+      findCardBySerie(serieCard, function(err, card){
         if(err)
-          res.send(500, err.message);
-        async.forEachOf(logins, function(value,key,cb){
-          var id = value._id;
-          var usuario = value.usuario;
-          var password = value.password;
-          Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
-            if(err){
-              cb(true);
-            }
-            if(emple._id == idL){
-              Logins.findById(id, function(err, logueo){
-                logueo.usuario = req.body.usuario;
-                logueo.password = req.body.password;
-
-                logueo.save(function(err){
+          return res.status(500).send(err.message);
+        var idCard = card._id;
+        findCardById(idTarjeta, function(err, tarj){
+          if(err)
+              return res.status(500).send(err.message);
+          findLoginById(idLogin, function(err,login){
+            if(err)
+              return res.status(500).send(err.message);
+            //console.log(user, isAdmin);
+            user.nombre = req.body.nombre;
+            user.apPaterno = req.body.apPaterno;
+            user.apMaterno = req.body.apMaterno;
+            user.direccion = req.body.direccion;
+            user.telefono = req.body.telefono;
+            user.email = req.body.email;
+            user.fechaNac = req.body.fechaNac;
+            user.tEmpleado = idTipoEmpleado;
+            user.isAdmin = isAdmin;
+            user.iTarjeta = idCard;
+            card.estado = "activo";
+            tarj.estado = "inactivo";
+            login.usuario = username;
+            login.password = password;
+            login.save(function(err){
+              if(err)
+                return res.status(500).send(err.message);
+              user.save(function(err){
+                if(err)
+                  return res.status(500).send(err.message);
+                card.save(function(err){
                   if(err)
-                    cb(true);
+                    return res.status(500).send(err.message);
+                  tarj.save(function(err){
+                    if(err)
+                      return res.status(500).send(err.message);
+                    //console.log(req.user.id, user._id);
+                    if(req.user._id == user.iLogin._id){
+                      if((user.iLogin.usuario != username) || (user.iLogin.password != password)){
+                        req.logout();
+                        res.redirect('/');
+                      }
+                      else
+                        res.redirect("/users");
+                    }
+                    else
+                      res.redirect("/users");
+                  });
                 });
               });
-            }
-
-            cb();
+            });
           });
-          
-        },function (err){
-          if(err)
-            res.send(500, err.message);
-          //console.log(empleadoModSend);
-          res.redirect("/users");
-        });
+        });     
       });
-      
     });
   });
 };
 
 //DELETE - Delete a TVShow with specified ID
 exports.deleteEmpleado = function(req, res) {  
-  Empleados.findById(req.params.id, function(err, empleado) {
+  findUserActive(req, function(err, empleado) {
     if(err)
       res.send(500, err.message);
     if( req.session.idUserActive == req.params.id){
@@ -277,43 +327,69 @@ exports.deleteEmpleado = function(req, res) {
     }
     req.session.errDel=false;
     var idL = req.params.id;
-    Logins.find({},function(err,logins){
+
+    findUserById(idL, function(err, user){
+      if(err)
+        res.send(500, err.message);
+      findLoginById(user.iLogin._id, function(err, login){
         if(err)
           res.send(500, err.message);
-        async.forEachOf(logins, function(value,key,cb){
-          var id = value._id;
-          var usuario = value.usuario;
-          var password = value.password;
-          Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
-            if(err){
-              cb(true);
-            }
-            if(emple._id == idL){
-              Logins.findById(id, function(err, logueo){
-                if(err)
-                  cb(true)
-                logueo.remove(function(err){
-                  if(err)
-                    cb(true)
-
-                })
-              });
-            }
-
-            cb();
-          });
-          
-        },function (err){
+        login.remove(function(err){
           if(err)
             res.send(500, err.message);
-          //console.log(empleadoModSend);
-          empleado.remove(function(err) {
-            if(err)
-              return res.status(500).send(err.message);
-            res.redirect("/users");
+          findCardById(user.iTarjeta._id, function(err, card){
+            card.estado = "inactivo";
+            card.save(function(err){
+              if(err)
+                res.send(500, err.message);
+              user.remove(function(err) {
+                if(err)
+                  return res.status(500).send(err.message);
+                res.redirect("/users");
+              });
+            })
           })
         });
       });
+    });
+
+    // Logins.find({},function(err,logins){
+    //     if(err)
+    //       res.send(500, err.message);
+    //     async.forEachOf(logins, function(value,key,cb){
+    //       var id = value._id;
+    //       var usuario = value.usuario;
+    //       var password = value.password;
+    //       Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
+    //         if(err){
+    //           cb(true);
+    //         }
+    //         if(emple._id == idL){
+    //           Logins.findUserActive(id, function(err, logueo){
+    //             if(err)
+    //               cb(true)
+    //             logueo.remove(function(err){
+    //               if(err)
+    //                 cb(true)
+
+    //             })
+    //           });
+    //         }
+
+    //         cb();
+    //       });
+          
+    //     },function (err){
+    //       if(err)
+    //         res.send(500, err.message);
+    //       //console.log(empleadoModSend);
+    //       empleado.remove(function(err) {
+    //         if(err)
+    //           return res.status(500).send(err.message);
+    //         res.redirect("/users");
+    //       })
+    //     });
+    //   });
     
   });
 };

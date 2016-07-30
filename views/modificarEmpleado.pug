@@ -77,21 +77,56 @@ body
 										label e-Mail
 									div(class="small-8 medium-8 large-8 columns")
 										input(type="text" class="radio" style="height: 20px;" name="email"  value=userModificar.email)
+								
 								div(class="row")
-									div(class="small-4 medium-4 large-4 columns")
-										label Fecha Nacimiento
-									div(class="small-8 medium-8 large-8 columns")
-										input(type="text" class="radio" style="height: 20px;" name="fechaNac" value=userModificar.fechaNac)
+										div(class="small-3 medium-3 large-3 columns")
+											label FechaNac
+										div(class="small-7 medium-7 large-8 columns")
+											input(type="date" name="fechaNac" required class="radio" style="height: 35px;" value=userModificar.fNac)
 								div(class="row")
-									div(class="small-4 medium-4 large-4 columns")
-										label Username
-									div(class="small-8 medium-8 large-8 columns")
-										input(type="text" class="radio" style="height: 20px;" name="usuario"  value=userModificar.userAlias)
+									div(class="small-3 medium-3 large-3 columns")
+										label Tipo Empleado
+									div(class="small-7 medium-7 large-8 columns")
+										section
+											select(name="tEmpleado" class="radio" style="height: 35px;")
+												each val, index in puestos
+													if userModificar.tEmpleado.nombre == val.nombre
+														option(selected="selected")=val.nombre
+													else
+														option=val.nombre
 								div(class="row")
-									div(class="small-4 medium-4 large-4 columns")
+									div(class="small-3 medium-3 large-3 columns")
+										label ¿Administrador del sistema?
+									div(class="small-7 medium-7 large-8 columns")
+										section
+											select(name="isAdmin" class="radio" style="height: 35px;")
+												if userModificar.isAdmin
+													option(selected="selected") Si
+													option No
+												else
+													option(selected="selected") No
+													option Si
+								div(class="row")
+									div(class="small-3 medium-3 large-3 columns")
+										label idTrjeta
+									div(class="small-7 medium-7 large-8 columns")
+										sections
+											select(name="serieTarjeta" class="radio" style="height: 35px;")
+												each val, index in cards
+													if userModificar.iTarjeta.serie == val.serie
+														option(selected="selected")=val.serie
+													else
+														option=val.serie
+								div(class="row")
+									div(class="small-3 medium-3 large-3 columns")
+										label Nombre de usuario
+									div(class="small-7 medium-7 large-8 columns")
+										input(type="text" value=userModificar.iLogin.usuario name="username" required class="radio" style="height: 35px;")
+								div(class="row")
+									div(class="small-3 medium-3 large-3 columns")
 										label Password
-									div(class="small-8 medium-8 large-8 columns")
-										input(type="text" class="radio" style="height: 20px;" name="password" value=userModificar.userPwd)
+									div(class="small-7 medium-7 large-8 columns")
+										input(type="password" value=userModificar.iLogin.password name="password" required class="radio" style="height: 35px;")
 								div(class="row")
 									div(class="large-4 large-offset-2 columns")
 										button(type='submit' class="button radio") Modificar

@@ -75,8 +75,8 @@ body
 										tr
 											td(class="text-center")=val._id
 											td(class="text-center")=val.nombre + " "+ val.apPaterno + " " + val.apMaterno
-											td(class="text-center")=val.userAlias
-											td(class="text-center")=val.userPwd
+											td(class="text-center")=val.iLogin.usuario
+											td(class="text-center")=val.iLogin.password
 											td(class="text-center")
 												form(action='/users/'+val._id+'')
 													button(type='submit' class="success button radio") Modificar
@@ -103,8 +103,8 @@ body
 										tr
 											td(class="text-center")=val._id
 											td(class="text-center")=val.nombre + " "+ val.apPaterno + " " + val.apMaterno
-											td(class="text-center")=val.userAlias
-											td(class="text-center")=val.userPwd
+											td(class="text-center")=val.iLogin.usuario
+											td(class="text-center")=val.iLogin.password
 											td(class="text-center")
 												form(action='/users/'+val._id+'')
 													button(type='submit' class="success button radio") Modificar

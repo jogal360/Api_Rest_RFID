@@ -15,7 +15,8 @@ exports = module.exports = function(mongoose) {
     fechaNac:   Date,
     tEmpleado : { type: Schema.ObjectId, ref: 'tipos_empleados'},
     iLogin : { type: Schema.ObjectId, ref: 'logins' },
-    iTarjeta: { type: Schema.ObjectId, ref: 'tarjetas' }
+    iTarjeta: { type: Schema.ObjectId, ref: 'tarjetas' },
+    isAdmin: Boolean
   });
 
   mongoose.model('empleados', empleado); 

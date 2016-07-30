@@ -37,14 +37,14 @@ exports.dashboard = function(req, res) {
   }
   else{
     var id = req.user._id;
-    Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, empleados) {
+    Empleados.findOne().where("iLogin", ObjectId(id)).exec(function(err, emps) {
       if(err)
         res.send(500, err.message);
+      //Logins.populate(emps,{path:"iLogin"}, function(err, result){
       req.session.errorlogin = false;
-      res.status(200).render('administrador',{user: empleados});
+      res.status(200).render('administrador',{user: emps});
     });
   }
-  
 };
 
 //GET - Obtiene un empleado en base a un id
