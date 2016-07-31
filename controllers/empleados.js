@@ -250,13 +250,18 @@ function findCardById(id, cb){
 exports.addEmpleado = function(req, res) {
   var serieTarjeta = req.body.serieTarjeta;
   var tipoEmpleado = req.body.tEmpleado;
+  var isAdmin = req.body.isAdmin;
+  if(isAdmin == "No")
+    isAdmin = false;
+  else
+    isAdmin = true;
   findCardBySerie(serieTarjeta, function(err, card){
     if(err)
       res.send(500, err.message);
     findTipoEmpleadosByName(tipoEmpleado, function(err, tEmp){
       if(err)
         res.send(500, err.message);
-      console.log(req.body);
+      //console.log(req.body);
       var l = new Logins({
         usuario   : req.body.username,
         password  : req.body.password
@@ -279,9 +284,9 @@ exports.addEmpleado = function(req, res) {
             tEmpleado : tEmp._id,
             iLogin    : l._id,
             iTarjeta  : card._id,
-            isAdmin   : req.body.isAdmin
+            isAdmin   : isAdmin
           });
-          console.log(empleado);
+          //console.log(empleado);
           empleado.save(function(err){
             if(err){
               console.log("hubo errror ", err);

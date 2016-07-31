@@ -17,7 +17,7 @@ exports = module.exports = function(mongoose) {
     iLogin : { type: Schema.ObjectId, ref: 'logins' },
     iTarjeta: { type: Schema.ObjectId, ref: 'tarjetas' },
     isAdmin: Boolean
-  });
+  },{versionKey:false});
 
   mongoose.model('empleados', empleado); 
 }
