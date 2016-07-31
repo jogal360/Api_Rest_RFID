@@ -42,21 +42,26 @@ body
 			div(id="workarea")
 				div(class="row")
 					div(class="large-12")
-						div(class="small-2 medium-2 large-2 large-offset-2 columns")
-							br
-							label Buscar empleado
-
-						div(class="small-2 medium-2 large-3 columns")
-							br
-							input(type="text" id="right-label" class="radio")
-						
-						div(class="small-3 medium-3 large-5 columns")
-							br
-							a(class="warning button radio" href="#") Buscar
+						form(method='POST', action='/search')
+							div(class="small-2 medium-2 large-2 large-offset-2 columns")
+								br
+								label Buscar empleado
+							div(class="small-2 medium-2 large-3 columns")
+								br
+								input(type="text" name="search" id="right-label" class="radio")
+							
+							div(class="small-3 medium-3 large-5 columns")
+								br
+								button(type='submit' class="warning button radio") Buscar
+								
 			if message
 				div(class="row expanded")
-					div(class="alert callout [radius round]" data-alert)
-						p(class="negrita text-center") No puedes eliminar al usuario con el que iniciaste sesión.
+					if messageNoUsers 
+						div(class="alert callout [radius round]" data-alert)
+							p(class="negrita text-center") La bésqueda no generó ningún resultado, ingrese otro valor de búsqueda.
+					else
+						div(class="alert callout [radius round]" data-alert)
+							p(class="negrita text-center") No puedes eliminar al usuario con el que iniciaste sesión.
 					div(class="small-12 medium-12 large-12 text-center")
 										a(href="/add-user" class="button radio") Agregar usuario
 					div(class="small-12 medium-12 large-12 columns")
@@ -70,20 +75,23 @@ body
 										th(width="150" class="encT") Contraseña
 										th(width="150" class="encT") Modificar
 										th(width="150" class="encT") Eliminar
-
-									each val, index in users
+									if users == null
 										tr
-											td(class="text-center")=val._id
-											td(class="text-center")=val.nombre + " "+ val.apPaterno + " " + val.apMaterno
-											td(class="text-center")=val.iLogin.usuario
-											td(class="text-center")=val.iLogin.password
-											td(class="text-center")
-												form(action='/users/'+val._id+'')
-													button(type='submit' class="success button radio") Modificar
-												
-											td(class="text-center")
-												form(method='POST', action='/users/'+val._id+'?_method=DELETE')
-													button(type='submit' class="alert button radio") Delete
+											td(class="text-center" colspan="6") Sin registros
+									else
+										each val, index in users
+											tr
+												td(class="text-center")=val._id
+												td(class="text-center")=val.nombre + " "+ val.apPaterno + " " + val.apMaterno
+												td(class="text-center")=val.iLogin.usuario
+												td(class="text-center")=val.iLogin.password
+												td(class="text-center")
+													form(action='/users/'+val._id+'')
+														button(type='submit' class="success button radio") Modificar
+													
+												td(class="text-center")
+													form(method='POST', action='/users/'+val._id+'?_method=DELETE')
+														button(type='submit' class="alert button radio") Delete
 			else	
 					div(class="small-12 medium-12 large-12 text-center")
 										a(href="/add-user" class="button radio") Agregar usuario
@@ -98,7 +106,7 @@ body
 										th(width="150" class="encT") Contraseña
 										th(width="150" class="encT") Modificar
 										th(width="150" class="encT") Eliminar
-
+										
 									each val, index in users
 										tr
 											td(class="text-center")=val._id

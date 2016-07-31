@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var ObjectId = require('mongoose').Types.ObjectId; 
+var Regex = require("regex");
 var async = require('async');
 //Models
 var Entradas     = mongoose.model('entradas'),
@@ -39,7 +40,7 @@ exports.users = function(req, res) {
       if(err)
         res.send(500, err.message);
       if(req.session.errDel){
-        res.status(200).render('list_users',{user: empleado, users:emps,message: req.flash('message')}); 
+        res.status(200).render('list_users',{user: empleado, users:emps, message: req.flash('message'),messageNoUsers : false, messageLogin:true}); 
       }
       else{
         res.status(200).render('list_users',{user: empleado, users:emps});   
@@ -58,7 +59,7 @@ exports.addUserView = function(req, res) {
       TEmpleados.find({}, function(err, tEmps){
         if(err)
           res.send(500, err.message);
-        res.status(200).render('addUser',{user: empleado, cards:tarj, puestos:tEmps}); //, { message: req.flash('message') }
+        res.status(200).render('addUser',{user: empleado, cards:tarj, puestos:tEmps});
       });
     });
   });
@@ -68,7 +69,31 @@ exports.incidencias = function(req, res) {
   findUserActive(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
-    res.status(200).render('incidencias',{user: empleado}); //, { message: req.flash('message') }
+    res.status(200).render('incidencias',{user: empleado}); 
+  });
+};
+
+exports.search = function(req, res) {  
+  var emps = [];
+  var param = req.body.search;
+  console.log(param);
+  findUserActive(req, function(err, empleado){
+    if (err)
+      res.send(500, err.message);
+    findUserByName(param, function(err,emps){
+    //findAllEmpleados(function(err,emps){
+      if(err){
+        console.log(err);
+        res.send(500, err.message);
+      }
+      console.log(emps);
+      if(emps == null){
+        res.status(200).render('list_users',{user: empleado, users:emps,message: req.flash('message'), messageNoUsers : true, messageLogin:false}); 
+      }
+      else{
+        res.status(200).render('list_users',{user: empleado, users:emps});   
+      }
+    });
   });
 };
 
@@ -152,6 +177,22 @@ function findUserById (id, cb) {
   });
 };
 
+//Obtiene un empleado en base al nombre o apellidos
+function findUserByName (param, cb) {  
+  var param = param;
+  var regex = new Regex('^'+param+'$', "i");
+  Empleados.find(
+    { $or : [{"nombre":{$regex: new RegExp('^' + param, 'i')}},{"apPaterno":{$regex: new RegExp('^' + param, 'i')}}, {"apMaterno": {$regex: new RegExp('^' + param, 'i')}}]} )
+    .populate("tEmpleado")
+    .populate("iLogin")
+    .populate("iTarjeta")
+    .exec(function(err, empleado) {
+    if(err)
+      cb(true);
+    cb(false, empleado);
+  });
+};
+
 //Encontrar los tipos de empleados
 function findTipoEmpleados(cb){
   TEmpleados.find({}, function(err, tEmps){
@@ -208,38 +249,54 @@ function findCardById(id, cb){
 //POST - Guarda un empleado
 exports.addEmpleado = function(req, res) {
   var serieTarjeta = req.body.serieTarjeta;
-  Tarjetas.findOne().where("serie", serieTarjeta).exec(function(err, tarjeta) {
+  var tipoEmpleado = req.body.tEmpleado;
+  findCardBySerie(serieTarjeta, function(err, card){
     if(err)
       res.send(500, err.message);
-    tarjeta.estado = "activo";
-    tarjeta.save(function(err){
+    findTipoEmpleadosByName(tipoEmpleado, function(err, tEmp){
       if(err)
         res.send(500, err.message);
-
-      var empleado = new Empleados({
-        nombre    : req.body.nombre,
-        apPaterno : req.body.apPaterno,
-        apMaterno : req.body.apMaterno,
-        direccion : req.body.direccion,
-        telefono  : req.body.telefono,
-        email     : req.body.email,
-        fechaNac  : req.body.fechaNac,
-        iTarjeta  : tarjeta._id
+      console.log(req.body);
+      var l = new Logins({
+        usuario   : req.body.username,
+        password  : req.body.password
       });
-      empleado.save(function(err, empleado) {
-        if(err) 
-         return res.status(500).send(err);
-       //console.log(empleado);
-       res.redirect("/users");
+      l.save(function(err){
+        if(err)
+          res.send(500, err.message);
+        card.estado = "activo";
+        card.save(function(err, card){
+          if(err)
+            res.send(500, err.message);
+          var empleado = new Empleados({
+            nombre    : req.body.nombre,
+            apPaterno : req.body.apPaterno,
+            apMaterno : req.body.apMaterno,
+            direccion : req.body.direccion,
+            telefono  : req.body.telefono,
+            email     : req.body.email,
+            fechaNac  : req.body.fechaNac,
+            tEmpleado : tEmp._id,
+            iLogin    : l._id,
+            iTarjeta  : card._id,
+            isAdmin   : req.body.isAdmin
+          });
+          console.log(empleado);
+          empleado.save(function(err){
+            if(err){
+              console.log("hubo errror ", err);
+              res.send(500, err.message);
+            }
+            res.redirect("/users");
+          });
+        });
       });
-
     });
   });
 }
 
 //PUT - Actualiza un empleado existente
 exports.updateEmpleado = function(req, res) {  
-  //console.log(req.user);
   var id = req.params.id;
   var tipoEmpleado = req.body.tEmpleado;
   var serieCard = req.body.serieTarjeta;

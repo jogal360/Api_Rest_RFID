@@ -7,9 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Joaquin GALVAN",
-  "repository" : { 
-    "type" : "git"
-  , "url" : "https://github.com/jogal360/Api_Rest_RFID"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jogal360/Api_Rest_RFID"
   },
   "license": "MIT",
   "dependencies": {
@@ -26,6 +26,7 @@
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^4.0.0",
-    "pug": "^2.0.0-beta4"
+    "pug": "^2.0.0-beta4",
+    "regex": "^0.1.1"
   }
 }

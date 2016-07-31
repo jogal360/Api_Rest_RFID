@@ -42,6 +42,24 @@ module.exports = function (app,router,ctrl,passport){
 		ctrlEmpleados.horario(req,res);
 	});
 
+	//Post Search
+	router.post("/search", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlEmpleados.search(req,res);
+	});
+
+	//Get Search
+	router.get("/search", function (req, res, next) {
+		if (req.isAuthenticated())
+			return next();
+		res.redirect('/');
+	} , function(req, res){
+		ctrlEmpleados.users(req,res);
+	});
+
 	//Get Incidencias
 	router.get("/incidencias", function (req, res, next) {
 		if (req.isAuthenticated())
