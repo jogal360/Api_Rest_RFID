@@ -28,9 +28,10 @@ body
 			div(class="menu large-12 row expanded item")
 				li
 					a(href="/horario") Horario
-			div(class="menu large-12 row expanded item")
-				li
-					a(href="/users") Usuarios	
+			if user.isAdmin
+				div(class="menu large-12 row expanded item")
+					li
+						a(href="/users") Usuarios		
 			div(class="menu large-12 row expanded item")
 				li
 					a(href="/incidencias") Incidencias

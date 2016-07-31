@@ -76,7 +76,7 @@ exports.incidencias = function(req, res) {
 exports.search = function(req, res) {  
   var emps = [];
   var param = req.body.search;
-  console.log(param);
+  //console.log(param);
   findUserActive(req, function(err, empleado){
     if (err)
       res.send(500, err.message);
@@ -86,7 +86,7 @@ exports.search = function(req, res) {
         console.log(err);
         res.send(500, err.message);
       }
-      console.log(emps);
+      //console.log(emps);
       if(emps == null){
         res.status(200).render('list_users',{user: empleado, users:emps,message: req.flash('message'), messageNoUsers : true, messageLogin:false}); 
       }
@@ -417,44 +417,5 @@ exports.deleteEmpleado = function(req, res) {
         });
       });
     });
-
-    // Logins.find({},function(err,logins){
-    //     if(err)
-    //       res.send(500, err.message);
-    //     async.forEachOf(logins, function(value,key,cb){
-    //       var id = value._id;
-    //       var usuario = value.usuario;
-    //       var password = value.password;
-    //       Empleados.findOne().where("iLogin.$id", ObjectId(id)).exec(function(err, emple) {
-    //         if(err){
-    //           cb(true);
-    //         }
-    //         if(emple._id == idL){
-    //           Logins.findUserActive(id, function(err, logueo){
-    //             if(err)
-    //               cb(true)
-    //             logueo.remove(function(err){
-    //               if(err)
-    //                 cb(true)
-
-    //             })
-    //           });
-    //         }
-
-    //         cb();
-    //       });
-          
-    //     },function (err){
-    //       if(err)
-    //         res.send(500, err.message);
-    //       //console.log(empleadoModSend);
-    //       empleado.remove(function(err) {
-    //         if(err)
-    //           return res.status(500).send(err.message);
-    //         res.redirect("/users");
-    //       })
-    //     });
-    //   });
-    
   });
 };
