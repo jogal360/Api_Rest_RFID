@@ -319,11 +319,11 @@ exports.updateEmpleado = function(req, res) {
       if(err)
           return res.status(500).send(err.message);
       var idTipoEmpleado = tipoEmp._id;
-      findCardBySerie(serieCard, function(err, card){
+      findCardBySerie(serieCard, function(err, card){ //tarjeta elegida
         if(err)
           return res.status(500).send(err.message);
         var idCard = card._id;
-        findCardById(idTarjeta, function(err, tarj){
+        findCardById(idTarjeta, function(err, tarj){ //tarjeta actual user
           if(err)
               return res.status(500).send(err.message);
           findLoginById(idLogin, function(err,login){
@@ -340,8 +340,11 @@ exports.updateEmpleado = function(req, res) {
             user.tEmpleado = idTipoEmpleado;
             user.isAdmin = isAdmin;
             user.iTarjeta = idCard;
+            if(String(idTarjeta) !=  String(idCard))
+              tarj.estado = "inactivo";
+            else
+             tarj.estado = "activo"; 
             card.estado = "activo";
-            tarj.estado = "inactivo";
             login.usuario = username;
             login.password = password;
             login.save(function(err){
